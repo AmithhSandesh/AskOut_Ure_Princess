@@ -605,6 +605,331 @@
           text-shadow: 0 0 30px #ffd700, 0 0 40px #ffd700, 0 0 50px #ffd700;
         }
       }
+
+      /* ===== MOBILE RESPONSIVE STYLES ===== */
+      
+      /* Large Mobile Devices (up to 480px) */
+      @media (max-width: 480px) {
+        body {
+          overflow-x: hidden;
+          background-attachment: scroll; /* Better for mobile */
+          padding: 10px;
+        }
+
+        .journey-container {
+          max-width: 95%;
+          width: 95%;
+          padding: 25px 20px;
+          margin: 10px auto;
+          border-radius: 20px;
+          min-height: auto;
+          box-shadow: 0 15px 30px rgba(255, 182, 193, 0.2);
+        }
+
+        .question-title {
+          font-size: 2.2rem;
+          margin-bottom: 15px;
+          line-height: 1.2;
+        }
+
+        .question-title::after {
+          right: -30px;
+          top: -5px;
+          font-size: 1.5rem;
+        }
+
+        .question-text {
+          font-size: 1.4rem;
+          margin-bottom: 30px;
+          line-height: 1.5;
+          padding: 0 10px;
+        }
+
+        .buttons-container {
+          flex-direction: column;
+          gap: 15px;
+          height: auto;
+          padding: 10px 0;
+        }
+
+        .btn {
+          padding: 15px 25px;
+          font-size: 1.1rem;
+          width: 80%;
+          max-width: 250px;
+          letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+          margin-bottom: 20px;
+          height: 4px;
+        }
+
+        /* Celebration screen mobile adjustments */
+        .celebration-content {
+          padding: 20px;
+          max-width: 95%;
+        }
+
+        .mega-heart {
+          font-size: 12rem;
+        }
+
+        .final-message {
+          font-size: 3.5rem;
+          margin: 25px 0;
+          letter-spacing: 2px;
+          line-height: 1.1;
+        }
+
+        .surprise-text {
+          font-size: 1.8rem;
+          margin: 20px 0;
+          padding: 0 10px;
+        }
+
+        .love-declaration {
+          font-size: 1.6rem;
+          line-height: 1.4;
+          margin: 25px 0;
+          padding: 0 10px;
+        }
+
+        .romantic-poem {
+          font-size: 1.3rem;
+          line-height: 1.8;
+          margin: 25px 0;
+          padding: 0 10px;
+        }
+
+        .eternal-promise {
+          font-size: 1.4rem;
+          line-height: 1.6;
+          margin: 25px 0;
+          padding: 0 10px;
+        }
+
+        .golden-promise {
+          font-size: 1.2rem;
+          margin: 20px 0;
+          padding: 0 10px;
+        }
+      }
+
+      /* Small Mobile Devices (up to 360px) */
+      @media (max-width: 360px) {
+        .journey-container {
+          padding: 20px 15px;
+          width: 98%;
+          border-radius: 15px;
+        }
+
+        .question-title {
+          font-size: 1.9rem;
+          margin-bottom: 12px;
+        }
+
+        .question-title::after {
+          right: -25px;
+          top: -3px;
+          font-size: 1.3rem;
+        }
+
+        .question-text {
+          font-size: 1.2rem;
+          margin-bottom: 25px;
+          padding: 0 5px;
+        }
+
+        .btn {
+          padding: 12px 20px;
+          font-size: 1rem;
+          width: 85%;
+        }
+
+        .mega-heart {
+          font-size: 10rem;
+        }
+
+        .final-message {
+          font-size: 2.8rem;
+          margin: 20px 0;
+          letter-spacing: 1px;
+        }
+
+        .surprise-text {
+          font-size: 1.5rem;
+          margin: 15px 0;
+        }
+
+        .love-declaration {
+          font-size: 1.4rem;
+          line-height: 1.3;
+          margin: 20px 0;
+        }
+
+        .romantic-poem {
+          font-size: 1.1rem;
+          line-height: 1.7;
+          margin: 20px 0;
+        }
+
+        .eternal-promise {
+          font-size: 1.2rem;
+          line-height: 1.5;
+          margin: 20px 0;
+        }
+
+        .golden-promise {
+          font-size: 1.1rem;
+          margin: 15px 0;
+        }
+      }
+
+      /* Extra Small Devices (up to 320px) */
+      @media (max-width: 320px) {
+        body {
+          padding: 5px;
+        }
+
+        .journey-container {
+          padding: 15px 12px;
+          width: 99%;
+          min-height: auto;
+        }
+
+        .question-title {
+          font-size: 1.7rem;
+          margin-bottom: 10px;
+        }
+
+        .question-title::after {
+          right: -20px;
+          top: 0px;
+          font-size: 1.2rem;
+        }
+
+        .question-text {
+          font-size: 1.1rem;
+          margin-bottom: 20px;
+          line-height: 1.4;
+        }
+
+        .btn {
+          padding: 10px 18px;
+          font-size: 0.95rem;
+          width: 90%;
+        }
+
+        .buttons-container {
+          gap: 12px;
+        }
+
+        .mega-heart {
+          font-size: 8rem;
+        }
+
+        .final-message {
+          font-size: 2.4rem;
+          margin: 15px 0;
+          letter-spacing: 0.5px;
+        }
+
+        .surprise-text {
+          font-size: 1.3rem;
+          margin: 12px 0;
+        }
+
+        .love-declaration {
+          font-size: 1.2rem;
+          line-height: 1.3;
+          margin: 15px 0;
+        }
+
+        .romantic-poem {
+          font-size: 1rem;
+          line-height: 1.6;
+          margin: 15px 0;
+        }
+
+        .eternal-promise {
+          font-size: 1.1rem;
+          line-height: 1.4;
+          margin: 15px 0;
+        }
+
+        .golden-promise {
+          font-size: 1rem;
+          margin: 12px 0;
+        }
+      }
+
+      /* Landscape Mobile Orientation */
+      @media (max-height: 500px) and (orientation: landscape) {
+        body {
+          overflow-y: auto;
+          align-items: flex-start;
+          padding-top: 20px;
+        }
+
+        .journey-container {
+          min-height: auto;
+          margin: 20px auto;
+        }
+
+        .celebration {
+          overflow-y: auto;
+          align-items: flex-start;
+          padding-top: 20px;
+        }
+
+        .celebration-content {
+          margin: 20px 0;
+        }
+
+        .mega-heart {
+          font-size: 6rem;
+        }
+
+        .final-message {
+          font-size: 2rem;
+          margin: 10px 0;
+        }
+
+        .love-declaration,
+        .romantic-poem,
+        .eternal-promise,
+        .golden-promise {
+          font-size: 1rem;
+          margin: 10px 0;
+        }
+      }
+
+      /* Touch-friendly enhancements */
+      @media (hover: none) and (pointer: coarse) {
+        .btn {
+          min-height: 48px; /* Minimum touch target size */
+          transform: scale(1);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:active {
+          transform: scale(0.95);
+        }
+
+        .no-btn:hover {
+          opacity: 1;
+          transform: scale(1);
+          pointer-events: all;
+        }
+
+        /* Make no button disappear on touch instead of hover */
+        .no-btn:active {
+          opacity: 0;
+          transform: scale(0.8) rotate(180deg);
+          pointer-events: none;
+        }
+      }
     </style>
   </head>
   <body>
