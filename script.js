@@ -54,6 +54,116 @@ const registerCelebrationLoop = (callback, interval, cap) => {
   trackCelebrationInterval(id);
 };
 
+const parallaxState = {
+  enabled: !prefersReducedMotion.matches,
+  targetX: 0,
+  targetY: 0,
+  currentX: 0,
+  currentY: 0,
+  listenersActive: false,
+  rafId: null,
+};
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const pointerMoveHandler = (event) => {
+  if (!parallaxState.enabled) return;
+  const pointerX = event.clientX / window.innerWidth - 0.5;
+  const pointerY = event.clientY / window.innerHeight - 0.5;
+  parallaxState.targetX = clamp(pointerX, -0.5, 0.5);
+  parallaxState.targetY = clamp(pointerY, -0.5, 0.5);
+};
+
+const pointerLeaveHandler = () => {
+  parallaxState.targetX = 0;
+  parallaxState.targetY = 0;
+};
+
+const applyParallaxTransforms = (time) => {
+  const ease = 0.08;
+  parallaxState.currentX += (parallaxState.targetX - parallaxState.currentX) * ease;
+  parallaxState.currentY += (parallaxState.targetY - parallaxState.currentY) * ease;
+
+  const motionEnabled = parallaxState.enabled && !prefersReducedMotion.matches;
+  const floatAmplitude = motionEnabled ? 1 : 0;
+  const floatX = floatAmplitude ? Math.cos(time * 0.00022) * 4.5 : 0;
+  const floatY = floatAmplitude ? Math.sin(time * 0.00027) * 6.5 : 0;
+
+  const offsetX = parallaxState.currentX * 38 + floatX;
+  const offsetY = parallaxState.currentY * 24 + floatY;
+
+  if (journeyContainer) {
+    journeyContainer.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotateX(${parallaxState.currentY * -10}deg) rotateY(${parallaxState.currentX * 12}deg)`;
+    journeyContainer.style.setProperty('--glowOpacity', String(Math.min(0.55, Math.abs(parallaxState.currentX) + Math.abs(parallaxState.currentY) + 0.25)));
+  }
+
+  if (ambientLayer) {
+    const ambientX = parallaxState.currentX * -55 - floatX * 0.4;
+    const ambientY = parallaxState.currentY * -32 - floatY * 0.3;
+    ambientLayer.style.transform = `translate3d(${ambientX}px, ${ambientY}px, 0)`;
+  }
+
+  if (starlightLayer) {
+    const starlightX = parallaxState.currentX * -25 - floatX * 0.2;
+    const starlightY = parallaxState.currentY * -18 - floatY * 0.15;
+    starlightLayer.style.transform = `translate3d(${starlightX}px, ${starlightY}px, 0)`;
+  }
+
+  if (cosmicSky) {
+    const skyX = parallaxState.currentX * 12;
+    const skyY = parallaxState.currentY * 18;
+    cosmicSky.style.transform = `translate3d(${skyX}px, ${skyY}px, 0)`;
+  }
+};
+
+const parallaxLoop = (time) => {
+  applyParallaxTransforms(time);
+  parallaxState.rafId = requestAnimationFrame(parallaxLoop);
+};
+
+const startParallaxLoop = () => {
+  if (parallaxState.rafId !== null) return;
+  parallaxState.rafId = requestAnimationFrame(parallaxLoop);
+};
+
+const enableParallaxListeners = () => {
+  if (parallaxState.listenersActive || prefersReducedMotion.matches) return;
+  window.addEventListener('pointermove', pointerMoveHandler, { passive: true });
+  window.addEventListener('pointerleave', pointerLeaveHandler);
+  parallaxState.listenersActive = true;
+};
+
+const disableParallaxListeners = () => {
+  if (!parallaxState.listenersActive) return;
+  window.removeEventListener('pointermove', pointerMoveHandler);
+  window.removeEventListener('pointerleave', pointerLeaveHandler);
+  parallaxState.listenersActive = false;
+  parallaxState.targetX = 0;
+  parallaxState.targetY = 0;
+  parallaxState.currentX = 0;
+  parallaxState.currentY = 0;
+  if (journeyContainer) {
+    journeyContainer.style.transform = 'translate3d(0px, 0px, 0)';
+    journeyContainer.style.setProperty('--glowOpacity', '0.2');
+  }
+  if (ambientLayer) ambientLayer.style.transform = 'translate3d(0px, 0px, 0)';
+  if (starlightLayer) starlightLayer.style.transform = 'translate3d(0px, 0px, 0)';
+  if (cosmicSky) cosmicSky.style.transform = 'translate3d(0px, 0px, 0)';
+};
+
+const updateParallaxMode = () => {
+  parallaxState.enabled = !prefersReducedMotion.matches;
+  if (!parallaxState.enabled) {
+    parallaxState.targetX = 0;
+    parallaxState.targetY = 0;
+  }
+  if (parallaxState.enabled) {
+    enableParallaxListeners();
+  } else {
+    disableParallaxListeners();
+  }
+};
+
 const getStarCount = () => {
   const base = Math.max(60, Math.floor(window.innerWidth * devicePixelRatioSafe * 0.045));
   const tuned = window.innerWidth > 1400 ? Math.min(base, 160) : Math.min(base, 140);
@@ -216,6 +326,8 @@ function openGate() {
 
 createStarField();
 seedAmbientLayers();
+startParallaxLoop();
+updateParallaxMode();
 
 if (enterJourneyButton) {
   enterJourneyButton.addEventListener("click", openGate);
@@ -235,18 +347,17 @@ if (entryGate) {
   }, 9000);
 }
 
+const handleMotionPreferenceChange = () => {
+  updateParallaxMode();
+  createStarField();
+  seedAmbientLayers();
+  if (gateHasOpened) beginCosmicShow();
+};
+
 if (prefersReducedMotion.addEventListener) {
-  prefersReducedMotion.addEventListener("change", () => {
-    createStarField();
-    seedAmbientLayers();
-    if (gateHasOpened) beginCosmicShow();
-  });
+  prefersReducedMotion.addEventListener("change", handleMotionPreferenceChange);
 } else if (prefersReducedMotion.addListener) {
-  prefersReducedMotion.addListener(() => {
-    createStarField();
-    seedAmbientLayers();
-    if (gateHasOpened) beginCosmicShow();
-  });
+  prefersReducedMotion.addListener(handleMotionPreferenceChange);
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -290,18 +401,9 @@ function disappearNo(button) {
 
   createMagicSparkles(button);
 
-  const container = journeyContainer || document.querySelector(".journey-container");
-  if (container) {
-    if (prefersReducedMotion.matches) {
-      container.style.animation = "";
-      container.style.transform = "translateY(0px)";
-    } else {
-      container.style.animation = "none";
-      container.style.transform = "translateY(0px) rotateY(2deg)";
-      setTimeout(() => {
-        container.style.animation = "containerFloat 8s ease-in-out infinite";
-      }, 300);
-    }
+  if (parallaxState.enabled) {
+    parallaxState.targetX = clamp(parallaxState.targetX + (Math.random() - 0.5) * 0.12, -0.5, 0.5);
+    parallaxState.targetY = clamp(parallaxState.targetY - 0.1, -0.5, 0.5);
   }
 
   setTimeout(() => {
