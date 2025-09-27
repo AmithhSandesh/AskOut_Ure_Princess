@@ -6,7 +6,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ff9a9e 100%);
+  background: linear-gradient(120deg, #0b061e 0%, #1c0a3a 40%, #090218 100%);
   background-attachment: fixed;
   min-height: 100vh;
   display: flex;
@@ -14,24 +14,374 @@ body {
   align-items: center;
   overflow: hidden;
   position: relative;
+  color: #fefaff;
+  will-change: background-position;
+}
+
+.cosmic-sky {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+  background: radial-gradient(circle at 50% 15%, rgba(255, 194, 246, 0.3), transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(255, 162, 179, 0.25), transparent 60%),
+    radial-gradient(circle at 20% 20%, rgba(161, 131, 255, 0.18), transparent 55%),
+    #050212;
+  z-index: -2;
+}
+
+.cosmic-sky.lit {
+  opacity: 1;
+}
+
+.cosmic-sky .star {
+  position: absolute;
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  opacity: 0;
+  animation: starTwinkle 6s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: opacity, transform;
+}
+
+.cosmic-sky .star.luminescent {
+  box-shadow: 0 0 12px rgba(255, 226, 255, 0.65), 0 0 22px rgba(137, 108, 255, 0.45);
+  transform: scale(1.3);
+  transition: transform 1.2s ease, box-shadow 1.2s ease;
+}
+
+.shooting-star {
+  position: absolute;
+  width: 160px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9));
+  filter: drop-shadow(0 0 12px rgba(255, 227, 255, 0.8));
+  opacity: 0;
+  transform-origin: left center;
+  pointer-events: none;
+  animation: shootingComet var(--duration, 3.6s) ease-in-out forwards;
+}
+
+.entry-gate {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 12;
+  backdrop-filter: blur(4px);
+  transition: opacity 1s ease;
+  will-change: opacity, transform;
+}
+
+.entry-gate.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gate-aurora {
+  position: absolute;
+  width: 140vw;
+  height: 140vh;
+  background: conic-gradient(
+    from 90deg,
+    rgba(255, 197, 246, 0.15),
+    rgba(126, 123, 255, 0.25),
+    rgba(255, 196, 168, 0.2),
+    rgba(255, 197, 246, 0.15)
+  );
+  filter: blur(60px);
+  animation: auroraPulse 12s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.gate-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(160deg, rgba(57, 19, 97, 0.95), rgba(18, 6, 34, 0.92));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 40px rgba(255, 214, 249, 0.08);
+  transition: transform 1.4s ease-in-out;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.gate-door.left {
+  left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.gate-door.right {
+  right: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.entry-gate.opening .gate-door.left {
+  transform: translateX(-120%);
+}
+
+.entry-gate.opening .gate-door.right {
+  transform: translateX(120%);
+}
+
+.entry-gate.opening .gate-center {
+  opacity: 0;
+  transform: translateY(-24px) scale(0.96);
+}
+
+.entry-gate.active-glow .gate-center {
+  animation: gateCenterPulse 2.6s ease-in-out infinite;
+  box-shadow: 0 24px 60px rgba(255, 155, 222, 0.45), inset 0 0 30px rgba(255, 255, 255, 0.08);
+}
+
+.gate-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 8%, transparent 9%);
+  background-size: 40px 40px;
+  opacity: 0.35;
+  animation: patternDrift 18s linear infinite;
+}
+
+.gate-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 203, 248, 0.22), transparent 65%);
+  filter: blur(14px);
+  opacity: 0.7;
+  animation: gateGlow 6s ease-in-out infinite;
+}
+
+.gate-center {
+  position: relative;
+  text-align: center;
+  max-width: 560px;
+  padding: 40px;
+  background: rgba(12, 3, 28, 0.78);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 30px 45px rgba(14, 3, 35, 0.45), inset 0 0 30px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+.gate-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.6rem, 4vw, 3.6rem);
+  margin-bottom: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffe8fb;
+  text-shadow: 0 12px 35px rgba(248, 146, 255, 0.45);
+}
+
+.gate-subtitle {
+  font-size: 1.1rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+  margin-bottom: 16px;
+}
+
+.enter-btn {
+  margin-top: 10px;
+  padding: 18px 48px;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, #ff7dcb, #ffa85b);
+  color: #23021a;
+  box-shadow: 0 15px 35px rgba(255, 140, 207, 0.4);
+}
+
+.enter-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 28px 45px rgba(255, 153, 210, 0.45);
 }
 
 .journey-container {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+
+.journey-container.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  animation: containerFloat 16s ease-in-out infinite;
+}
+
+.celestial-haze {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 153, 214, 0.18), transparent 70%),
+    radial-gradient(circle at 20% 70%, rgba(133, 146, 255, 0.12), transparent 60%),
+    radial-gradient(circle at 80% 65%, rgba(255, 208, 134, 0.16), transparent 65%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 3s ease;
+  z-index: -1;
+}
+
+.celestial-haze.visible {
+  opacity: 1;
+}
+
+@keyframes auroraPulse {
+  0%,
+  100% {
+    transform: scale3d(1, 1, 1) rotate(0deg);
+    opacity: 0.85;
+  }
+  40% {
+    transform: scale3d(1.1, 1.05, 1) rotate(6deg);
+    opacity: 1;
+  }
+  70% {
+    transform: scale3d(0.95, 0.98, 1) rotate(-4deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes patternDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.04);
+  }
+  50% {
+    transform: translate3d(-10%, -8%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(12%, 10%, 0) scale(1.04);
+  }
+}
+
+@keyframes gateGlow {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  65% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes gateCenterPulse {
+  0%,
+  100% {
+    transform: translateZ(0) scale(1);
+  }
+  45% {
+    transform: translateZ(0) scale(1.03);
+  }
+  65% {
+    transform: translateZ(0) scale(0.98);
+  }
+}
+
+@keyframes containerFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+  }
+  35% {
+    transform: translate3d(0, -12px, 0) rotateX(1deg) rotateY(-1deg);
+  }
+  70% {
+    transform: translate3d(0, 8px, 0) rotateX(-1deg) rotateY(0.6deg);
+  }
+}
+
+@keyframes orbFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.75);
+    opacity: 0.15;
+  }
+  35% {
+    transform: translate3d(-8px, -20px, 0) scale(1.05);
+    opacity: 0.45;
+  }
+  70% {
+    transform: translate3d(12px, -40px, 0) scale(0.9);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translate3d(-6px, -60px, 0) scale(1.1);
+    opacity: 0.05;
+  }
+}
+
+@keyframes trailRise {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  25% {
+    transform: scaleY(1);
+    opacity: 0.5;
+  }
+  60% {
+    transform: scaleY(0.4);
+    opacity: 0.15;
+  }
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes shootingComet {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(var(--angle, -18deg)) scaleX(0.2);
+  }
+  10% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(var(--angle, -18deg)) scaleX(1);
+  }
+  55% {
+    opacity: 1;
+    transform: translate3d(var(--dx, -380px), var(--dy, 260px), 0)
+      rotate(var(--angle, -18deg)) scaleX(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--dx, -380px) * 1.2), calc(var(--dy, 260px) * 1.2), 0)
+      rotate(var(--angle, -18deg)) scaleX(1.2);
+  }
+}
+
+.journey-container {
+  background: rgba(19, 6, 40, 0.78);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 30px;
   padding: 50px 40px;
   max-width: 600px;
   width: 90%;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(255, 182, 193, 0.15);
+  box-shadow: 0 26px 60px rgba(12, 2, 25, 0.55);
   position: relative;
-  min-height: 500px;
+  min-height: 520px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   will-change: transform;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .journey-container::before {
@@ -41,10 +391,56 @@ body {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #ff6b6b, #ff8e8e, #ff6b6b);
+  background: linear-gradient(135deg, rgba(255, 122, 194, 0.55), rgba(111, 131, 255, 0.55), rgba(255, 178, 121, 0.48));
   border-radius: 32px;
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.85;
+  filter: blur(0.6px);
+}
+
+.ambient-layer,
+.starlight-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.ambient-layer .orb {
+  position: absolute;
+  width: var(--size, 140px);
+  height: var(--size, 140px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 248, 0.35), rgba(255, 183, 248, 0));
+  filter: blur(6px);
+  opacity: 0;
+  animation: orbFloat 14s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.starlight-layer .trail {
+  position: absolute;
+  width: 2px;
+  height: var(--length, 180px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform-origin: top;
+  animation: trailRise 9s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.ambient-layer .orb.active {
+  opacity: 0.45;
+}
+
+.starlight-layer .trail.active {
+  opacity: 0.35;
+}
+
+.journey-content {
+  position: relative;
+  z-index: 1;
 }
 
 .question-container {
@@ -166,7 +562,7 @@ body {
 .progress-bar {
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 3px;
   margin-bottom: 30px;
   overflow: hidden;
@@ -174,11 +570,11 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #4ecdc4);
+  background: linear-gradient(90deg, #ff7dde, #9c8aff, #6bebff);
   border-radius: 3px;
   width: 0%;
   transition: width 0.8s ease;
-  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  box-shadow: 0 0 14px rgba(154, 138, 255, 0.55);
 }
 
 .celebration {
@@ -990,6 +1386,24 @@ body {
     opacity: 0;
     transform: scale(0.8) rotate(180deg);
     pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-container.revealed {
+    animation: none;
+  }
+
+  .cosmic-sky .star {
+    animation-duration: 9s;
+  }
+
+  .shooting-star {
+    animation-duration: 4.2s;
+  }
+
+  .gate-aurora {
+    animation-duration: 16s;
   }
 }
 

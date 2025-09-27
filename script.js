@@ -1,5 +1,282 @@
+const entryGate = document.getElementById("entryGate");
+const enterJourneyButton = document.getElementById("enterJourney");
+const journeyContainer = document.getElementById("journeyContainer");
+const cosmicSky = document.getElementById("cosmicSky");
+const ambientLayer = document.getElementById("ambientLayer");
+const starlightLayer = document.getElementById("starlightLayer");
+const celestialHaze = document.querySelector(".celestial-haze");
+const celebration = document.getElementById("celebration");
+const hasMatchMedia = typeof window !== "undefined" && typeof window.matchMedia === "function";
+const prefersReducedMotion = hasMatchMedia
+  ? window.matchMedia("(prefers-reduced-motion: reduce)")
+  : { matches: false };
+const devicePixelRatioSafe = Math.min(window.devicePixelRatio || 1, 1.8);
+
+if (celebration) {
+  celebration.dataset.active = celebration.dataset.active ?? "false";
+}
+
+let gateHasOpened = false;
+let shootingInterval;
+let resizeTimeout;
+let lastSeedSize = { width: window.innerWidth, height: window.innerHeight };
 let currentQuestion = 1;
 const totalQuestions = 8;
+const celebrationIntervals = [];
+
+const isCelebrationActive = () => celebration && celebration.dataset.active === "true";
+
+const trackCelebrationInterval = (id) => {
+  celebrationIntervals.push(id);
+  return id;
+};
+
+const clearCelebrationIntervals = () => {
+  while (celebrationIntervals.length) {
+    clearInterval(celebrationIntervals.pop());
+  }
+};
+
+const registerCelebrationLoop = (callback, interval, cap) => {
+  let runs = 0;
+  const id = setInterval(() => {
+    if (!isCelebrationActive() || runs >= cap) {
+      clearInterval(id);
+      const index = celebrationIntervals.indexOf(id);
+      if (index !== -1) {
+        celebrationIntervals.splice(index, 1);
+      }
+      return;
+    }
+    callback();
+    runs += 1;
+  }, interval);
+  trackCelebrationInterval(id);
+};
+
+const getStarCount = () => {
+  const base = Math.max(60, Math.floor(window.innerWidth * devicePixelRatioSafe * 0.045));
+  const tuned = window.innerWidth > 1400 ? Math.min(base, 160) : Math.min(base, 140);
+  return prefersReducedMotion.matches ? Math.floor(tuned * 0.6) : tuned;
+};
+
+function createStarField() {
+  if (!cosmicSky) return;
+  const starTotal = getStarCount();
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < starTotal; i += 1) {
+    const star = document.createElement("span");
+    star.className = "star";
+    const size = (Math.random() * 2 + 1).toFixed(2);
+    const delay = Math.random() * 8;
+    const duration = 5 + Math.random() * 6;
+    star.style.setProperty("--size", `${size}px`);
+    star.style.setProperty("--delay", `${delay.toFixed(2)}s`);
+    star.style.animationDuration = `${duration.toFixed(2)}s`;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+    fragment.appendChild(star);
+  }
+
+  if (cosmicSky.replaceChildren) {
+    cosmicSky.replaceChildren(fragment);
+  } else {
+    cosmicSky.innerHTML = "";
+    cosmicSky.appendChild(fragment);
+  }
+}
+
+function seedAmbientLayers() {
+  if (!ambientLayer || !starlightLayer) return;
+  ambientLayer.innerHTML = "";
+  starlightLayer.innerHTML = "";
+
+  const compact = window.innerWidth < 768;
+  const orbTotal = prefersReducedMotion.matches
+    ? compact
+      ? 4
+      : 6
+    : compact
+      ? 7
+      : 10;
+  const trailTotal = prefersReducedMotion.matches
+    ? compact
+      ? 4
+      : 7
+    : compact
+      ? 8
+      : 12;
+
+  const orbFragment = document.createDocumentFragment();
+  for (let i = 0; i < orbTotal; i += 1) {
+    const orb = document.createElement("span");
+    orb.className = "orb";
+    const size = prefersReducedMotion.matches ? 100 + Math.random() * 80 : 120 + Math.random() * 140;
+    orb.style.setProperty("--size", `${size}px`);
+    orb.style.left = `${Math.random() * 100}%`;
+    orb.style.top = `${Math.random() * 100}%`;
+    orb.style.setProperty("--delay", `${Math.random() * 6}s`);
+    orbFragment.appendChild(orb);
+  }
+  ambientLayer.appendChild(orbFragment);
+
+  const trailFragment = document.createDocumentFragment();
+  for (let i = 0; i < trailTotal; i += 1) {
+    const trail = document.createElement("span");
+    trail.className = "trail";
+    trail.style.left = `${Math.random() * 100}%`;
+    trail.style.top = `${Math.random() * 60}%`;
+    trail.style.setProperty("--length", `${140 + Math.random() * 160}px`);
+    trail.style.setProperty("--delay", `${Math.random() * 5}s`);
+    trailFragment.appendChild(trail);
+  }
+  starlightLayer.appendChild(trailFragment);
+}
+
+function igniteStarField() {
+  if (!cosmicSky) return;
+  cosmicSky.classList.add("lit");
+  const stars = cosmicSky.querySelectorAll(".star");
+  stars.forEach((star, index) => {
+    setTimeout(() => {
+      star.classList.add("luminescent");
+    }, index * 18 + Math.random() * 60);
+  });
+}
+
+function unveilAmbientLayers() {
+  const orbs = ambientLayer ? ambientLayer.querySelectorAll(".orb") : [];
+  const trails = starlightLayer ? starlightLayer.querySelectorAll(".trail") : [];
+
+  orbs.forEach((orb, index) => {
+    setTimeout(() => orb.classList.add("active"), index * 160);
+  });
+
+  trails.forEach((trail, index) => {
+    setTimeout(() => trail.classList.add("active"), index * 140 + 400);
+  });
+}
+
+function launchShootingStar() {
+  if (!cosmicSky) return;
+  const star = document.createElement("span");
+  star.className = "shooting-star";
+  const startX = 70 + Math.random() * 25;
+  const startY = 5 + Math.random() * 20;
+  const duration = prefersReducedMotion.matches ? 3.2 + Math.random() * 1 : 3 + Math.random() * 1.8;
+  const dx = -320 - Math.random() * 200;
+  const dy = 180 + Math.random() * 220;
+  const angle = -15 - Math.random() * 10;
+
+  star.style.left = `${startX}vw`;
+  star.style.top = `${startY}vh`;
+  star.style.setProperty("--duration", `${duration}s`);
+  star.style.setProperty("--dx", `${dx}px`);
+  star.style.setProperty("--dy", `${dy}px`);
+  star.style.setProperty("--angle", `${angle}deg`);
+
+  cosmicSky.appendChild(star);
+  setTimeout(() => star.remove(), duration * 1000 + 600);
+}
+
+function beginCosmicShow() {
+  if (shootingInterval) clearInterval(shootingInterval);
+  igniteStarField();
+  unveilAmbientLayers();
+  if (celestialHaze) celestialHaze.classList.add("visible");
+  const intervalDelay = prefersReducedMotion.matches ? 9000 : 5200;
+  shootingInterval = setInterval(() => {
+    if (!document.hidden) {
+      launchShootingStar();
+    }
+  }, intervalDelay);
+  if (!prefersReducedMotion.matches) {
+    setTimeout(() => !document.hidden && launchShootingStar(), 900);
+  }
+}
+
+function openGate() {
+  if (gateHasOpened || !entryGate) return;
+  gateHasOpened = true;
+  entryGate.classList.add("opening");
+
+  setTimeout(() => {
+    entryGate.classList.add("hidden");
+    journeyContainer?.classList.add("revealed");
+    beginCosmicShow();
+  }, 1400);
+
+  setTimeout(() => {
+    if (entryGate && entryGate.parentElement) {
+      entryGate.parentElement.removeChild(entryGate);
+    }
+  }, 2200);
+}
+
+createStarField();
+seedAmbientLayers();
+
+if (enterJourneyButton) {
+  enterJourneyButton.addEventListener("click", openGate);
+}
+
+if (entryGate) {
+  setTimeout(() => {
+    if (!gateHasOpened) {
+      entryGate.classList.add("active-glow");
+    }
+  }, 1600);
+
+  setTimeout(() => {
+    if (!gateHasOpened) {
+      openGate();
+    }
+  }, 9000);
+}
+
+if (prefersReducedMotion.addEventListener) {
+  prefersReducedMotion.addEventListener("change", () => {
+    createStarField();
+    seedAmbientLayers();
+    if (gateHasOpened) beginCosmicShow();
+  });
+} else if (prefersReducedMotion.addListener) {
+  prefersReducedMotion.addListener(() => {
+    createStarField();
+    seedAmbientLayers();
+    if (gateHasOpened) beginCosmicShow();
+  });
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (shootingInterval) {
+      clearInterval(shootingInterval);
+      shootingInterval = undefined;
+    }
+  } else if (gateHasOpened) {
+    beginCosmicShow();
+  }
+});
+
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const widthDelta = Math.abs(window.innerWidth - lastSeedSize.width);
+    const heightDelta = Math.abs(window.innerHeight - lastSeedSize.height);
+    if (widthDelta < 80 && heightDelta < 80) {
+      return;
+    }
+    lastSeedSize = { width: window.innerWidth, height: window.innerHeight };
+    createStarField();
+    seedAmbientLayers();
+    if (gateHasOpened) {
+      requestAnimationFrame(beginCosmicShow);
+    }
+  }, 280);
+});
+
 function updateProgress() {
   const progressFill = document.getElementById("progressFill");
   const percentage = (currentQuestion / totalQuestions) * 100;
@@ -13,12 +290,19 @@ function disappearNo(button) {
 
   createMagicSparkles(button);
 
-  const container = document.querySelector(".journey-container");
-  container.style.animation = "none";
-  container.style.transform = "translateY(0px) rotateY(2deg)";
-  setTimeout(() => {
-    container.style.animation = "containerFloat 8s ease-in-out infinite";
-  }, 300);
+  const container = journeyContainer || document.querySelector(".journey-container");
+  if (container) {
+    if (prefersReducedMotion.matches) {
+      container.style.animation = "";
+      container.style.transform = "translateY(0px)";
+    } else {
+      container.style.animation = "none";
+      container.style.transform = "translateY(0px) rotateY(2deg)";
+      setTimeout(() => {
+        container.style.animation = "containerFloat 8s ease-in-out infinite";
+      }, 300);
+    }
+  }
 
   setTimeout(() => {
     if (button.textContent.includes("Not really")) {
@@ -165,9 +449,10 @@ function showFinalSurprise() {
 
   // Show celebration with dramatic entrance
   setTimeout(() => {
-    const celebration = document.getElementById("celebration");
+    if (!celebration) return;
     celebration.style.display = "flex";
     celebration.style.animation = "epicEntrance 1.5s ease-out";
+    celebration.dataset.active = "true";
 
     // Create MEGA celebration effects
     createMegaCelebration();
@@ -175,6 +460,9 @@ function showFinalSurprise() {
 
     // Epic screen effects
     document.body.style.animation = "screenShake 1.5s ease-in-out";
+    setTimeout(() => {
+      document.body.style.animation = "";
+    }, 1600);
 
     // Victory sound simulation with visual feedback
     createVictoryPulse();
@@ -260,17 +548,26 @@ function createVictoryPulse() {
   }, 200);
 }
 function createMegaCelebration() {
+  if (!isCelebrationActive()) return;
+  clearCelebrationIntervals();
+
   const heartsContainer = document.getElementById("floatingHearts");
+  const fireworksContainer = document.getElementById("fireworks");
+  const petalsContainer = document.getElementById("rosePetals");
+  if (!heartsContainer || !fireworksContainer || !petalsContainer) {
+    return;
+  }
   const hearts = ["💖", "💕", "💗", "💓", "💝", "💘", "❤️"];
 
   function createHeartWave() {
-    for (let i = 0; i < 15; i++) {
+    const total = prefersReducedMotion.matches ? 8 : 15;
+    for (let i = 0; i < total; i += 1) {
       const heart = document.createElement("div");
       heart.className = "floating-heart";
       heart.textContent = hearts[i % hearts.length];
       heart.style.left = Math.random() * 100 + "%";
-      heart.style.animationDuration = 4 + Math.random() * 2 + "s";
-      heart.style.fontSize = 1.5 + Math.random() + "rem";
+      heart.style.animationDuration = 4 + Math.random() * (prefersReducedMotion.matches ? 1 : 2) + "s";
+      heart.style.fontSize = 1.4 + Math.random() * (prefersReducedMotion.matches ? 0.6 : 1.1) + "rem";
       heart.style.animationDelay = Math.random() * 2 + "s";
       heartsContainer.appendChild(heart);
 
@@ -279,10 +576,10 @@ function createMegaCelebration() {
   }
 
   function createSparkles() {
-    const fireworksContainer = document.getElementById("fireworks");
     const sparkles = ["✨", "⭐", "🌟", "💫", "🔮"];
 
-    for (let i = 0; i < 12; i++) {
+    const total = prefersReducedMotion.matches ? 6 : 12;
+    for (let i = 0; i < total; i += 1) {
       const sparkle = document.createElement("div");
       sparkle.textContent = sparkles[i % sparkles.length];
       sparkle.style.position = "absolute";
@@ -298,10 +595,10 @@ function createMegaCelebration() {
   }
 
   function createRosePetals() {
-    const petalsContainer = document.getElementById("rosePetals");
     const petals = ["🌹", "🌺", "🌸", "💐", "🥀"];
 
-    for (let i = 0; i < 8; i++) {
+    const total = prefersReducedMotion.matches ? 4 : 8;
+    for (let i = 0; i < total; i += 1) {
       const petal = document.createElement("div");
       petal.className = "rose-petal";
       petal.textContent = petals[i % petals.length];
@@ -316,9 +613,8 @@ function createMegaCelebration() {
   }
 
   function createGoldenStars() {
-    const fireworksContainer = document.getElementById("fireworks");
-
-    for (let i = 0; i < 6; i++) {
+    const total = prefersReducedMotion.matches ? 3 : 6;
+    for (let i = 0; i < total; i += 1) {
       const star = document.createElement("div");
       star.textContent = "⭐";
       star.style.position = "absolute";
@@ -341,30 +637,16 @@ function createMegaCelebration() {
   createRosePetals();
   createGoldenStars();
 
-  const heartInterval = setInterval(() => {
-    if (document.getElementById("celebration").style.display === "flex") {
-      createHeartWave();
-    } else {
-      clearInterval(heartInterval);
-    }
-  }, 4500);
+  const heartMax = prefersReducedMotion.matches ? 2 : 4;
+  const sparkleMax = prefersReducedMotion.matches ? 2 : 4;
+  const petalMax = prefersReducedMotion.matches ? 1 : 3;
 
-  const sparkleInterval = setInterval(() => {
-    if (document.getElementById("celebration").style.display === "flex") {
-      createSparkles();
-      createGoldenStars();
-    } else {
-      clearInterval(sparkleInterval);
-    }
-  }, 3500);
-
-  const petalInterval = setInterval(() => {
-    if (document.getElementById("celebration").style.display === "flex") {
-      createRosePetals();
-    } else {
-      clearInterval(petalInterval);
-    }
-  }, 7000);
+  registerCelebrationLoop(createHeartWave, 4500, heartMax);
+  registerCelebrationLoop(() => {
+    createSparkles();
+    createGoldenStars();
+  }, 3600, sparkleMax);
+  registerCelebrationLoop(createRosePetals, 7200, petalMax);
 }
 
 updateProgress();
