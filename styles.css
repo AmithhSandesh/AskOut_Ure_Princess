@@ -572,22 +572,30 @@ body {
 .no-btn {
   background: linear-gradient(135deg, #74b9ff, #0984e3, #00cec9);
   color: white;
-  box-shadow: 0 15px 30px rgba(116, 185, 255, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: 0 15px 28px rgba(116, 185, 255, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
   opacity: 1;
   transform: scale(1);
+  position: relative;
 }
 
-.no-btn:hover {
-  opacity: 0;
-  transform: scale(0.8) rotate(180deg);
-  pointer-events: none;
+.no-btn:hover,
+.no-btn:focus-visible {
+  opacity: 1;
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 18px 34px rgba(39, 165, 255, 0.45);
 }
 
-.no-btn.disappeared {
-  opacity: 0;
-  transform: scale(0) rotate(360deg);
-  pointer-events: none;
+.no-btn.evading {
+  cursor: not-allowed;
+  box-shadow: 0 18px 38px rgba(39, 165, 255, 0.55);
+}
+
+.no-btn-placeholder {
+  display: inline-flex;
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
 }
 
 .progress-bar {
@@ -1491,14 +1499,14 @@ body {
 
   .no-btn:hover {
     opacity: 1;
-    transform: scale(1);
-    pointer-events: all;
+    transform: translateY(-3px) scale(1.02);
+    pointer-events: auto;
   }
 
   .no-btn:active {
-    opacity: 0;
-    transform: scale(0.8) rotate(180deg);
-    pointer-events: none;
+    opacity: 1;
+    transform: translateY(-1px) scale(0.98);
+    pointer-events: auto;
   }
 }
 

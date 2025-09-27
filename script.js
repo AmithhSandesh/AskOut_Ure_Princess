@@ -164,6 +164,131 @@ const updateParallaxMode = () => {
   }
 };
 
+const getViewportPadding = () => Math.min(32, Math.max(20, Math.round(window.innerWidth * 0.04)));
+
+const clampButtonToViewport = (button) => {
+  if (!button || button.parentElement !== document.body) return;
+  const padding = getViewportPadding();
+  const width = button.offsetWidth;
+  const height = button.offsetHeight;
+  const maxLeft = Math.max(padding, window.innerWidth - width - padding);
+  const maxTop = Math.max(padding, window.innerHeight - height - padding);
+  const currentRect = button.getBoundingClientRect();
+  const left = Math.min(maxLeft, Math.max(padding, parseFloat(button.style.left) || currentRect.left));
+  const top = Math.min(maxTop, Math.max(padding, parseFloat(button.style.top) || currentRect.top));
+  button.style.left = `${left}px`;
+  button.style.top = `${top}px`;
+};
+
+const ensureNoButtonPlaceholder = (button, rect, computed) => {
+  if (button._placeholder) {
+    button._placeholder.style.width = `${rect.width}px`;
+    button._placeholder.style.height = `${rect.height}px`;
+    return;
+  }
+  button._originParent = button.parentElement;
+  button._originNextSibling = button.nextElementSibling;
+  const placeholder = document.createElement('span');
+  placeholder.className = 'no-btn-placeholder';
+  placeholder.style.display = 'inline-flex';
+  placeholder.style.width = `${rect.width}px`;
+  placeholder.style.height = `${rect.height}px`;
+  placeholder.style.visibility = 'hidden';
+  const flexValue = computed.flex && computed.flex !== '0 1 auto' ? computed.flex : '0 0 auto';
+  placeholder.style.flex = flexValue;
+  placeholder.style.margin = computed.margin;
+  placeholder.style.pointerEvents = 'none';
+  button._placeholder = placeholder;
+  if (button._originParent) {
+    button._originParent.insertBefore(placeholder, button);
+  }
+};
+
+const moveNoButtonRandomly = (button) => {
+  if (!button) return;
+  const padding = getViewportPadding();
+  const width = button.offsetWidth;
+  const height = button.offsetHeight;
+  const maxLeft = Math.max(padding, window.innerWidth - width - padding);
+  const maxTop = Math.max(padding, window.innerHeight - height - padding);
+  const targetLeft = Math.random() * (maxLeft - padding) + padding;
+  const targetTop = Math.random() * (maxTop - padding) + padding;
+  const clampedLeft = Math.min(maxLeft, Math.max(padding, targetLeft));
+  const clampedTop = Math.min(maxTop, Math.max(padding, targetTop));
+  button.style.left = `${clampedLeft}px`;
+  button.style.top = `${clampedTop}px`;
+  const rotate = (Math.random() - 0.5) * 14;
+  const scale = 1 + (Math.random() - 0.5) * 0.05;
+  button.style.transform = `translate3d(0, 0, 0) scale(${scale}) rotate(${rotate}deg)`;
+};
+
+const restoreNoButton = (button) => {
+  if (!button || !button._placeholder || !button._originParent) return;
+  const placeholder = button._placeholder;
+  const parent = button._originParent;
+  const nextSibling = button._originNextSibling;
+  if (parent) {
+    if (nextSibling && nextSibling.parentNode === parent) {
+      parent.insertBefore(button, nextSibling);
+    } else {
+      parent.appendChild(button);
+    }
+  }
+  placeholder.remove();
+  button._placeholder = null;
+  button._originParent = null;
+  button._originNextSibling = null;
+  button.style.position = '';
+  button.style.margin = '';
+  button.style.width = '';
+  button.style.height = '';
+  button.style.left = '';
+  button.style.top = '';
+  button.style.zIndex = '';
+  button.style.transition = '';
+  button.style.transform = '';
+  button.style.pointerEvents = '';
+  button.classList.remove('evading');
+};
+
+const restoreNoButtons = (scope) => {
+  const buttons = document.querySelectorAll('.no-btn');
+  buttons.forEach((button) => {
+    if (scope && button._originParent !== scope) return;
+    restoreNoButton(button);
+  });
+};
+
+const vanishNoButtons = (scope) => {
+  const buttons = document.querySelectorAll('.no-btn');
+  buttons.forEach((button) => {
+    const origin = button._originParent;
+    const belongsToScope = !scope
+      || (origin && (origin === scope || scope.contains(origin)))
+      || scope.contains(button);
+
+    if (!belongsToScope) return;
+
+    if (button._placeholder) {
+      button._placeholder.remove();
+      button._placeholder = null;
+    }
+
+    button._originParent = null;
+    button._originNextSibling = null;
+    button.style.pointerEvents = 'none';
+    button.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    button.style.opacity = '0';
+    button.style.transform = 'translate3d(0, 20px, 0) scale(0.6)';
+
+    setTimeout(() => {
+      if (button.parentElement) {
+        button.parentElement.removeChild(button);
+      }
+    }, 320);
+  });
+};
+
 const getStarCount = () => {
   const base = Math.max(60, Math.floor(window.innerWidth * devicePixelRatioSafe * 0.045));
   const tuned = window.innerWidth > 1400 ? Math.min(base, 160) : Math.min(base, 140);
@@ -348,6 +473,7 @@ if (entryGate) {
 }
 
 const handleMotionPreferenceChange = () => {
+  restoreNoButtons();
   updateParallaxMode();
   createStarField();
   seedAmbientLayers();
@@ -382,6 +508,7 @@ window.addEventListener("resize", () => {
     lastSeedSize = { width: window.innerWidth, height: window.innerHeight };
     createStarField();
     seedAmbientLayers();
+    document.querySelectorAll('.no-btn.evading').forEach((button) => clampButtonToViewport(button));
     if (gateHasOpened) {
       requestAnimationFrame(beginCosmicShow);
     }
@@ -395,28 +522,36 @@ function updateProgress() {
 }
 
 function disappearNo(button) {
-  button.style.opacity = "0";
-  button.style.transform = "scale(0) rotate(720deg)";
-  button.style.pointerEvents = "none";
+  if (!button) return;
 
+  const rect = button.getBoundingClientRect();
+  const computed = window.getComputedStyle(button);
+  ensureNoButtonPlaceholder(button, rect, computed);
+
+  if (button.parentElement !== document.body) {
+    document.body.appendChild(button);
+    button.style.position = 'fixed';
+    button.style.margin = '0';
+    button.style.width = `${rect.width}px`;
+    button.style.height = `${rect.height}px`;
+    button.style.zIndex = '1200';
+    button.style.transition = 'left 0.3s ease, top 0.3s ease, transform 0.25s ease';
+  }
+
+  button.classList.add('evading');
+  button.style.pointerEvents = 'none';
+  moveNoButtonRandomly(button);
+  clampButtonToViewport(button);
   createMagicSparkles(button);
 
   if (parallaxState.enabled) {
     parallaxState.targetX = clamp(parallaxState.targetX + (Math.random() - 0.5) * 0.12, -0.5, 0.5);
-    parallaxState.targetY = clamp(parallaxState.targetY - 0.1, -0.5, 0.5);
+    parallaxState.targetY = clamp(parallaxState.targetY - 0.08, -0.5, 0.5);
   }
 
   setTimeout(() => {
-    if (button.textContent.includes("Not really")) {
-      showTemporaryMessage("Well, you're about to witness some! ✨", button);
-    } else if (button.textContent.includes("not sure")) {
-      showTemporaryMessage("Your heart knows the truth... 💕", button);
-    } else if (button.textContent.includes("Maybe")) {
-      showTemporaryMessage("Today is that someday! 💖", button);
-    } else if (button.textContent.includes("need time")) {
-      showTemporaryMessage("Time stopped when I met you... ⏰💕", button);
-    }
-  }, 500);
+    button.style.pointerEvents = 'auto';
+  }, 260);
 }
 
 function createMagicSparkles(button) {
@@ -491,11 +626,13 @@ function nextQuestion(questionNumber) {
   currentQ.style.transform = "translateY(-30px)";
   currentQ.style.opacity = "0";
 
+  vanishNoButtons(currentQ);
   setTimeout(() => {
     currentQ.classList.add("hidden");
 
     const nextQ = document.getElementById("question" + questionNumber);
     nextQ.classList.remove("hidden");
+    restoreNoButtons(nextQ);
 
     setTimeout(() => {
       nextQ.classList.add("active");
@@ -527,6 +664,8 @@ function createCelebrationParticles() {
 
 function showFinalSurprise() {
   // LEGENDARY entrance sequence!
+
+  restoreNoButtons();
 
   // Epic rainbow flash sequence
   const colors = [
@@ -752,6 +891,15 @@ function createMegaCelebration() {
 }
 
 updateProgress();
+
+document.querySelectorAll('.no-btn').forEach((button) => {
+  button.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'touch') {
+      event.preventDefault();
+      disappearNo(button);
+    }
+  });
+});
 
 const style = document.createElement("style");
 style.textContent = `
