@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>💕 My Little Princess 💕</title>
+    <title>✨ The Journey to Your Heart ✨</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
@@ -17,69 +17,147 @@
         <div class="progress-fill" id="progressFill"></div>
       </div>
 
-
       <div class="question-container active" id="question1">
-        <div class="question-title">Good Morning Beautiful Princess! 💕</div>
-        <div class="question-text">Do you believe in magic? ✨</div>
+        <div class="question-title">Hey Beautiful... 💕</div>
+        <div class="question-text">
+          I've been wanting to tell you something special...<br />
+          Can I take you on a little journey? ✨
+        </div>
         <div class="buttons-container">
-          <button class="btn yes-btn" onclick="nextQuestion(2)">Yes! 💖</button>
+          <button class="btn yes-btn" onclick="nextQuestion(2)">
+            Take me! 💖
+          </button>
           <button class="btn no-btn" onmouseover="disappearNo(this)">
-            Not really 😅
+            Maybe later 😅
           </button>
         </div>
       </div>
 
-
       <div class="question-container hidden" id="question2">
-        <div class="question-title">Perfect! ✨</div>
+        <div class="question-title">Thank you... ✨</div>
         <div class="question-text">
-          Because what I feel for you is pure magic... 💫<br />Do you feel the
-          same connection?
+          You know, every time I look at you, I see something magical...<br />
+          There's this spark in your eyes that makes my heart race...<br />
+          Do you believe in destiny?
         </div>
         <div class="buttons-container">
           <button class="btn yes-btn" onclick="nextQuestion(3)">
-            I do! 💕
+            I think so 💕
           </button>
           <button class="btn no-btn" onmouseover="disappearNo(this)">
-            I'm not sure 🤔
+            Not really 🤔
           </button>
         </div>
       </div>
 
-
       <div class="question-container hidden" id="question3">
-        <div class="question-title">My Heart Beats For You 💓</div>
+        <div class="question-title">Because I Think We Are... �</div>
         <div class="question-text">
-          Every small conversation with you feels like a dream...<br />Would you like to
-          make those dreams come true together?
+          I believe destiny brought us together...<br />
+          Every conversation with you feels like coming home...<br />
+          Do you feel this connection between us too?
         </div>
         <div class="buttons-container">
           <button class="btn yes-btn" onclick="nextQuestion(4)">
-            Yes, always! 💖
+            I feel it too 💖
           </button>
           <button class="btn no-btn" onmouseover="disappearNo(this)">
-            Maybe someday 💭
+            I'm not sure 💭
           </button>
         </div>
       </div>
 
-
       <div class="question-container hidden" id="question4">
-        <div class="question-title">One Last Question... 💕</div>
+        <div class="question-title">You Make My World Shine 🌟</div>
         <div class="question-text">
-          Will you be mine? Will you let me love you with all my heart? 💖
+          When I see your smile, everything else fades away...<br />
+          Do you know how special you are to me?
         </div>
         <div class="buttons-container">
-          <button class="btn yes-btn" onclick="showFinalSurprise()">
-            YES! I'M YOURS! 💕
+          <button class="btn yes-btn" onclick="nextQuestion(5)">
+            Tell me more 😊
+          </button>
+          <button class="btn no-btn" onmouseover="disappearNo(this)">
+            I'm overwhelmed 😳
+          </button>
+        </div>
+      </div>
+
+      <!-- Question 5 -->
+      <div class="question-container hidden" id="question5">
+        <div class="question-title">My Heart's Confession 💝</div>
+        <div class="question-text">
+          I've been carrying this feeling for so long...<br />
+          You're not just beautiful, you're everything I've dreamed of.<br />
+          Can I share something from my heart?
+        </div>
+        <div class="buttons-container">
+          <button class="btn yes-btn" onclick="nextQuestion(6)">
+            Yes, tell me 💕
+          </button>
+          <button class="btn no-btn" onmouseover="disappearNo(this)">
+            This is too much 😅
+          </button>
+        </div>
+      </div>
+
+      <!-- Question 6 -->
+      <div class="question-container hidden" id="question6">
+        <div class="question-title">The Truth I Can't Hide 💫</div>
+        <div class="question-text">
+          Every day I wake up thinking about you...<br />
+          Every night I fall asleep with you in my thoughts...<br />
+          I think I'm falling in love with you... 💕<br />
+          Do you feel anything for me?
+        </div>
+        <div class="buttons-container">
+          <button class="btn yes-btn" onclick="nextQuestion(7)">
+            I feel something too 💖
+          </button>
+          <button class="btn no-btn" onmouseover="disappearNo(this)">
+            I don't know 😔
+          </button>
+        </div>
+      </div>
+
+      <!-- Question 7 -->
+      <div class="question-container hidden" id="question7">
+        <div class="question-title">The Moment of Truth 💍</div>
+        <div class="question-text">
+          I can't imagine my life without you in it...<br />
+          You complete me in ways I never knew possible...<br />
+          Will you be my girlfriend? Will you let me love you? 💖
+        </div>
+        <div class="buttons-container">
+          <button class="btn yes-btn" onclick="nextQuestion(8)">
+            Yes! I want to try! 💕
           </button>
           <button class="btn no-btn" onmouseover="disappearNo(this)">
             I need time 😔
           </button>
         </div>
       </div>
-    </div>
 
+      <!-- Question 8 - Final -->
+      <div class="question-container hidden" id="question8">
+        <div class="question-title">My Promise to You 👑</div>
+        <div class="question-text">
+          I promise to cherish you, respect you, and love you with everything I
+          have...<br />
+          I promise to be your safe place, your biggest supporter, your partner
+          in everything...<br />
+          Will you be mine? Will you let me prove my love every single day? 💖
+        </div>
+        <div class="buttons-container">
+          <button class="btn yes-btn" onclick="showFinalSurprise()">
+            YES! I'M YOURS FOREVER! 💕✨
+          </button>
+          <button class="btn no-btn" onmouseover="disappearNo(this)">
+            I can't... �
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div class="celebration" id="celebration">
       <div class="celebration-content">
@@ -92,29 +170,36 @@
           <div class="glass-fragment"></div>
           <div class="mega-heart">💖</div>
         </div>
-        <div class="final-message">My Little Princess!! 💕</div>
+        <div class="final-message">YES!! SHE SAID YES!! 💕✨</div>
         <div class="surprise-text">
-          You've just made every star in the universe jealous! ✨
+          You've just made me the happiest person in the entire universe! 🌟
         </div>
         <div class="love-declaration">
-          From this moment, you are my sunrise and my sunset,<br />
-          my first thought and my last dream,<br />
-          my today, my tomorrow, and my always... 🌅🌄
+          My darling, my heart is overflowing with joy right now...<br />
+          You are everything I've ever wanted and more...<br />
+          Welcome to our beautiful love story! 💖✨
         </div>
         <div class="romantic-poem">
-          "Like a rose in full bloom, your beauty enchants me,<br />
-          Like a gentle breeze, your love surrounds me,<br />
-          Like the stars above, you light up my darkness,<br />
-          Like the ocean waves, my love for you is endless! 🌹✨"
+          "Today marks the beginning of our forever,<br />
+          A love story written in the stars above,<br />
+          With you by my side, I can conquer anything,<br />
+          You are my greatest adventure, my truest love! 🌹💫"
         </div>
         <div class="eternal-promise">
-          I promise to love you in ways you've never been loved,<br />
-          for reasons you've never been told,<br />
-          for longer than you thought possible... 💍
+          I promise to wake up every day grateful for you,<br />
+          to love you through every season of life,<br />
+          to be your best friend, your safe haven, your home...<br />
+          This is just the beginning of our magic! ✨💍
         </div>
         <div class="golden-promise">
-          You are my once-in-a-lifetime, my fairy tale come true,<br />
-          my happily ever after! 👑💕
+          You've just become my girlfriend, my queen, my everything!<br />
+          Get ready for the most beautiful love story ever written!<br />
+          I love you more than words could ever express! 👑💕💖
+        </div>
+        <div class="celebration-actions">
+          <div class="next-step">
+            let's make some beautiful memories together! �💕<br />
+          </div>
         </div>
       </div>
       <div class="floating-hearts" id="floatingHearts"></div>
@@ -123,7 +208,6 @@
       <div class="rose-petals" id="rosePetals"></div>
     </div>
 
-    
     <script src="script.js"></script>
   </body>
 </html>

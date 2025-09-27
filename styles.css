@@ -202,6 +202,13 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.celebration::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 @keyframes celebrationEntrance {
@@ -655,6 +662,12 @@ body {
   }
 }
 
+/* Auto-scroll highlight effect */
+.scroll-highlight {
+  transform: scale(1.05);
+  transition: transform 0.5s ease;
+  filter: brightness(1.2);
+}
 @media (max-width: 480px) {
   body {
     overflow-x: hidden;
@@ -978,4 +991,67 @@ body {
     transform: scale(0.8) rotate(180deg);
     pointer-events: none;
   }
+}
+
+/* LEGENDARY EPIC ENTRANCE ANIMATION */
+@keyframes epicEntrance {
+  0% {
+    transform: scale(0) rotateY(180deg) rotateZ(45deg);
+    opacity: 0;
+    filter: blur(30px) hue-rotate(180deg);
+  }
+  15% {
+    transform: scale(0.2) rotateY(135deg) rotateZ(30deg);
+    opacity: 0.2;
+    filter: blur(25px) hue-rotate(150deg);
+  }
+  30% {
+    transform: scale(0.4) rotateY(90deg) rotateZ(15deg);
+    opacity: 0.4;
+    filter: blur(20px) hue-rotate(120deg);
+  }
+  50% {
+    transform: scale(0.7) rotateY(45deg) rotateZ(5deg);
+    opacity: 0.7;
+    filter: blur(10px) hue-rotate(60deg);
+  }
+  70% {
+    transform: scale(1.1) rotateY(10deg) rotateZ(-2deg);
+    opacity: 0.9;
+    filter: blur(3px) hue-rotate(20deg);
+  }
+  85% {
+    transform: scale(1.05) rotateY(5deg) rotateZ(1deg);
+    opacity: 0.95;
+    filter: blur(1px) hue-rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg) rotateZ(0deg);
+    opacity: 1;
+    filter: blur(0px) hue-rotate(0deg);
+  }
+}
+
+/* Additional celebration styling */
+.celebration-actions {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.next-step {
+  font-size: 1.3rem;
+  color: #ff6b6b;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.next-step small {
+  font-size: 0.9rem;
+  color: #666;
+  display: block;
+  margin-top: 10px;
+  font-style: italic;
 }
